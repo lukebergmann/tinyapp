@@ -1,7 +1,7 @@
 {
   "name": "tinyapp",
   "version": "1.0.0",
-  "description": "",
+  "description": "This is for the creation of 'tinyapp,' the app that shortens url's",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,7 +11,7 @@
     "url": "git+https://github.com/lukebergmann/tinyapp.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Luke Bergmann",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/lukebergmann/tinyapp/issues"
