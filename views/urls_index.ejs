@@ -13,10 +13,12 @@
   <title>TinyApp</title>
 </head>
 <style>
+   .shortURL {color: whitesmoke;}
   body {background-color: #bbbbbb;}
   th {color: #393e46;}
   h3 {color: #393e46;}
   tbody {color: #222831; }
+ 
 </style>
 
 <body>
@@ -37,7 +39,7 @@
         <tbody>
           <% for(let url in urls) { %>
             <tr>
-              <td>
+              <td class="shortURL">
                 <%= url %>
               </td>
               <td>

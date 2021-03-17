@@ -58,7 +58,6 @@ app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
   // console.log("Database at new:", urlDatabase)
   urlDatabase[shortURL].longURL = longURL;
-  console.log(urlDatabase)
   res.redirect(`/urls`);
   // console.log(req.body);  // Log the POST request body to the console
   
@@ -73,9 +72,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/urls/:shortURL", (req, res) => {
   let longURL = req.body.longURL
   let shortURL = req.params.shortURL;
-  console.log("database.longURL", urlDatabase[shortURL].longURL)
   urlDatabase[shortURL].longURL = longURL;
-  console.log("property of longURL", longURL)
   res.redirect("/urls");
 });
 
@@ -83,7 +80,6 @@ app.post("/urls/:shortURL", (req, res) => {
 app.post("/login", (req, res) => {
   let username = req.body.username;
   res.cookie('username', username);
-  console.log("username", username);
   res.redirect("/urls");
 });
 
@@ -91,8 +87,9 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   // Leaving a note here: I can clear cookies properly in the 'username' feild, but I am not clearing cookies properly in myUrls home page. Will look at this tomorrow
   // let username = req.body.username;
-  res.clearCookie('username')
-
+  console.log("What is this", urlDatabase)
+  res.clearCookie('urlDatabase')
+  res.clearCookie('username');
   res.redirect("/urls")
 })
 

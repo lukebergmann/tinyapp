@@ -1,4 +1,8 @@
 <!-- THIS PAGE IS THE HEADER WHICH CONTAINS THE NAVIGATION MENU AND THE LINKS TO /urls and /urls/new -->
+<style>
+  .login{color: whitesmoke;
+  opacity: 0.7;}
+</style>
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-info">
     <a class="navbar-brand" href="/urls">TinyApp</a>
@@ -14,7 +18,7 @@
     <div>
       <% if (username) { %> 
         <form method="POST" action="/logout">
-          <span>
+          <span class="login">
             Logged In As:
             <%= username %> 
           </span>
