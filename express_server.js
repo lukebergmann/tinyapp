@@ -14,8 +14,7 @@ const morgan = require('morgan');
 app.use(morgan('dev'));
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
+
 };
 
 app.get("/urls/new", (req, res) => {
@@ -30,7 +29,7 @@ app.get("/urls", (req, res) => {
 
 // Route to render the urls_show template
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: req.params.longURL };
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
 });
 
@@ -44,22 +43,35 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
-
+//create new url
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
-  let longURL = req.body.longURL;
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = {longURL: ""}
+  let newLongURL = req.body.longURL;
+  // console.log("Database at new:", urlDatabase)
+  urlDatabase[shortURL].longURL = newLongURL;
+  console.log(urlDatabase)
   res.redirect(`/urls/${shortURL}`);
-  console.log(req.body);  // Log the POST request body to the console
+  // console.log(req.body);  // Log the POST request body to the console
   
 });
-
+// post to delete a URL
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls")
+})
+//post to edit a URL
+app.post("/urls/:shortURL", (req, res) => {
+  urlDatabase[req.params.shortURL].longURL = req.body.editURL;
+  res.redirect("/urls")
+})
+
+//edit url submission
+app.get("/urls/:shortURL", (req, res) => {
+  
 })
 
 // App is listening on port 8080

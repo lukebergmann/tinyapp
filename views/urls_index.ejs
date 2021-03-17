@@ -12,6 +12,12 @@
     integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <title>TinyApp</title>
 </head>
+<style>
+  body {background-color: #bbbbbb;}
+  th {color: #393e46;}
+  h3 {color: #393e46;}
+  tbody {color: #222831; }
+</style>
 
 <body>
   <!-- include _header partial -->
@@ -23,6 +29,7 @@
           <tr>
             <th scope="col"> Short URL</th>
             <th scope="col"> Long URL</th>
+            <th scope="col"> Edit</th>
             <th scope="col"> Delete</th>
 
           </tr>
@@ -34,11 +41,18 @@
                 <%= url %>
               </td>
               <td>
-                <%= urls[url] %>
+                <%= urls[url].longURL %>
+              </td>
+              <td>
+
+                <a href="/urls/<%=url%>"> 
+                 <input type="submit" class="btn btn-info" value="Edit"/>
+                </a>
+
               </td>
               <td>
                 <form method="POST" action="/urls/<%=url%>/delete">
-                  <input type="submit" class="btn btn-outline-danger" value="Delete"/> 
+                  <input type="submit" class="btn btn-secondary" value="Delete" />
                 </form>
               </td>
             </tr>
