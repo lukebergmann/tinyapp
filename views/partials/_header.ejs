@@ -1,5 +1,4 @@
 <!-- THIS PAGE IS THE HEADER WHICH CONTAINS THE NAVIGATION MENU AND THE LINKS TO /urls and /urls/new -->
-
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-info">
     <a class="navbar-brand" href="/urls">TinyApp</a>
@@ -12,5 +11,20 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
-  </nav>
-</header>
+    <div>
+      <% if (username) { %> 
+        <form method="POST" action="/logout">
+          <span>
+            Logged In As:
+            <%= username %> 
+          </span>
+          <button type="submit" class="btn btn-outline-dark">Logout
+          </button></form>
+      <% } else { %> 
+        <form method="POST" action="/login">
+          <input name="username" type="text" class="submit" placeholder="username"/>
+          <button type="submit" class="btn btn-outline-dark">Login</button></form>
+          <% } %> 
+      </div>
+    </nav>
+  </header>

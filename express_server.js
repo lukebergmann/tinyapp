@@ -5,6 +5,8 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
 
 //This tells the Express app to use EJS as its templating engine
 app.set("view engine", "ejs");
@@ -18,18 +20,21 @@ const urlDatabase = {
 };
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = {
+    username: req.cookies["username"]
+  };
+  res.render("urls_new", templateVars);
 });
 
 // Route to render the urls_index template
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
   res.render("urls_index", templateVars);
 });
 
 // Route to render the urls_show template
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
   res.render("urls_show", templateVars);
 });
 
@@ -50,11 +55,11 @@ app.get("/u/:shortURL", (req, res) => {
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = {longURL: ""}
-  let newLongURL = req.body.longURL;
+  let longURL = req.body.longURL;
   // console.log("Database at new:", urlDatabase)
-  urlDatabase[shortURL].longURL = newLongURL;
+  urlDatabase[shortURL].longURL = longURL;
   console.log(urlDatabase)
-  res.redirect(`/urls/${shortURL}`);
+  res.redirect(`/urls`);
   // console.log(req.body);  // Log the POST request body to the console
   
 });
@@ -62,16 +67,33 @@ app.post("/urls", (req, res) => {
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls")
-})
+});
+
 //post to edit a URL
 app.post("/urls/:shortURL", (req, res) => {
-  urlDatabase[req.params.shortURL].longURL = req.body.editURL;
-  res.redirect("/urls")
-})
+  let longURL = req.body.longURL
+  let shortURL = req.params.shortURL;
+  console.log("database.longURL", urlDatabase[shortURL].longURL)
+  urlDatabase[shortURL].longURL = longURL;
+  console.log("property of longURL", longURL)
+  res.redirect("/urls");
+});
 
-//edit url submission
-app.get("/urls/:shortURL", (req, res) => {
-  
+//Post for login
+app.post("/login", (req, res) => {
+  let username = req.body.username;
+  res.cookie('username', username);
+  console.log("username", username);
+  res.redirect("/urls");
+});
+
+//Post to logout
+app.post("/logout", (req, res) => {
+  // Leaving a note here: I can clear cookies properly in the 'username' feild, but I am not clearing cookies properly in myUrls home page. Will look at this tomorrow
+  // let username = req.body.username;
+  res.clearCookie('username')
+
+  res.redirect("/urls")
 })
 
 // App is listening on port 8080
@@ -81,6 +103,6 @@ app.listen(PORT, () => {
 
 // A function to generate a random 6 character code (Alphanumeric and Numerical mixed)
 function generateRandomString() {
- return Math.random().toString(36).substr(2, 6);
-
+  return Math.random().toString(36).substr(2, 6);
+  
 }
