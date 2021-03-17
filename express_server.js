@@ -15,43 +15,25 @@ app.set("view engine", "ejs");
 const morgan = require('morgan');
 app.use(morgan('dev'));
 
-const urlDatabase = {
+// GLOBAL URL DATABASE
+const urlDatabase = {};
 
-};
+// GLOBAL USER DATABASE 
+const users = {};
 
-app.get("/urls/new", (req, res) => {
-  const templateVars = {
-    username: req.cookies["username"]
-  };
-  res.render("urls_new", templateVars);
-});
-
-// Route to render the urls_index template
-app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
-  res.render("urls_index", templateVars);
-});
-
-// Route to render the urls_show template
-app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
-  res.render("urls_show", templateVars);
-});
 
 // The root path
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+// ROUTE to render the urls_index template
+app.get("/urls", (req, res) => {
+  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  res.render("urls_index", templateVars);
 });
 
-app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
-});
-//create new url
+//POST new url
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = {longURL: ""}
@@ -60,15 +42,29 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortURL].longURL = longURL;
   res.redirect(`/urls`);
   // console.log(req.body);  // Log the POST request body to the console
-  
-});
-// post to delete a URL
-app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls")
 });
 
-//post to edit a URL
+// GET cookies when new user logs in
+app.get("/urls/new", (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"]
+  };
+  res.render("urls_new", templateVars);
+});
+
+// ROUTE to render the urls_show template
+app.get("/urls/:shortURL", (req, res) => {
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
+  res.render("urls_show", templateVars);
+});
+
+// GET to transfer long URL into shortURL
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL].longURL;
+  res.redirect(longURL);
+});
+
+//POST to edit a URL
 app.post("/urls/:shortURL", (req, res) => {
   let longURL = req.body.longURL
   let shortURL = req.params.shortURL;
@@ -76,14 +72,24 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect("/urls");
 });
 
-//Post for login
+// POST to delete a URL
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls")
+});
+
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
+});
+
+//POST to login
 app.post("/login", (req, res) => {
   let username = req.body.username;
   res.cookie('username', username);
   res.redirect("/urls");
 });
 
-//Post to logout
+//POST to logout
 app.post("/logout", (req, res) => {
   // Leaving a note here: I can clear cookies properly in the 'username' feild, but I am not clearing cookies properly in myUrls home page. Will look at this tomorrow
   // let username = req.body.username;
@@ -92,13 +98,34 @@ app.post("/logout", (req, res) => {
   res.clearCookie('username');
   res.redirect("/urls")
 })
+// GET to registration page
+app.get("/register", (req, res) => {
+  const templateVars = { username: req.cookies["username"] };
+  res.render("urls_register", templateVars)
+})
 
-// App is listening on port 8080
+//POST to register new users in user database
+app.post("/register", (req, res) => {
+  console.log(req.body)
+  let newID = generateRandomString();
+  let newEmail = req.body.email;
+  let newPassword = req.body.password
+  users[newID] = {
+    id: newID,
+    email: newEmail,
+    password: newPassword
+  }
+  res.cookie('user_id', newID);
+  res.redirect("/urls");
+  console.log(users)
+})
+
+// App is LISTENING on port 8080
 app.listen(PORT, () => {
   console.log(`This app is listening on port ${PORT}`);
 });
 
-// A function to generate a random 6 character code (Alphanumeric and Numerical mixed)
+// GENERATE RANDOM 6 CHARACTER CODE
 function generateRandomString() {
   return Math.random().toString(36).substr(2, 6);
   
