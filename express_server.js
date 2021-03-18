@@ -21,6 +21,11 @@ const urlDatabase = {};
 // GLOBAL USER DATABASE 
 const users = {};
 
+// Helper functions 
+const getCurrentUser = function(req) {
+   return users[req.cookies["user_id"]];
+
+};
 
 // The root path
 app.get("/", (req, res) => {
@@ -29,13 +34,14 @@ app.get("/", (req, res) => {
 
 // ROUTE to render the urls_index template
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  const currentUser = getCurrentUser(req);
+  const templateVars = { urls: urlDatabase, users: users, user_id: req.cookies["user_id"]};
   res.render("urls_index", templateVars);
 });
 
 //POST new url
 app.post("/urls", (req, res) => {
-  let shortURL = generateRandomString();
+  let shortURL = generateRandomString(req);
   urlDatabase[shortURL] = {longURL: ""}
   let longURL = req.body.longURL;
   // console.log("Database at new:", urlDatabase)
@@ -46,15 +52,17 @@ app.post("/urls", (req, res) => {
 
 // GET cookies when new user logs in
 app.get("/urls/new", (req, res) => {
+  const currentUser = getCurrentUser(req);
   const templateVars = {
-    username: req.cookies["username"]
+    users: users, user_id: req.cookies["user_id"]
   };
   res.render("urls_new", templateVars);
 });
 
 // ROUTE to render the urls_show template
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
+  const currentUser = getCurrentUser(req);
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], users: users, user_id: req.cookies["user_id"]};
   res.render("urls_show", templateVars);
 });
 
@@ -84,32 +92,39 @@ app.get("/urls.json", (req, res) => {
 
 //POST to login
 app.post("/login", (req, res) => {
-  let username = req.body.username;
-  res.cookie('username', username);
-  res.redirect("/urls");
+  let email = req.body.email;
+  for (let userID in users) {
+    if (email === users[userID].email) {
+      res.cookie('user_id', userID);
+      res.redirect("/urls");
+      return;
+    }
+  }
+  res.redirect("/register");
 });
 
 //POST to logout
 app.post("/logout", (req, res) => {
-  // Leaving a note here: I can clear cookies properly in the 'username' feild, but I am not clearing cookies properly in myUrls home page. Will look at this tomorrow
-  // let username = req.body.username;
-  console.log("What is this", urlDatabase)
-  res.clearCookie('urlDatabase')
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect("/urls")
 })
 // GET to registration page
 app.get("/register", (req, res) => {
-  const templateVars = { username: req.cookies["username"] };
+  const currentUser = getCurrentUser(req);
+  const templateVars = { users: users, user_id: req.cookies["user_id"] };
   res.render("urls_register", templateVars)
 })
 
 //POST to register new users in user database
 app.post("/register", (req, res) => {
-  console.log(req.body)
   let newID = generateRandomString();
   let newEmail = req.body.email;
   let newPassword = req.body.password
+  if (!newEmail || !newPassword){
+    res.redirect("/404")
+  } else if (users["newEmail"]) {
+    res.redirect("/404");
+  } else {
   users[newID] = {
     id: newID,
     email: newEmail,
@@ -117,8 +132,20 @@ app.post("/register", (req, res) => {
   }
   res.cookie('user_id', newID);
   res.redirect("/urls");
-  console.log(users)
+ }
+});
+
+
+// GET to 404 page
+app.get("/404", (req, res) => {
+  const currentUser = getCurrentUser(req);
+  const templateVars = { users: users, user_id: req.cookies["user_id"] };
+  res.render("urls_404", templateVars)
 })
+// POST to redirect from 404 page back to /register
+app.post("/404", (req, res) => {
+  res.redirect("/register")
+});
 
 // App is LISTENING on port 8080
 app.listen(PORT, () => {
