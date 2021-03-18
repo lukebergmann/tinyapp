@@ -2,6 +2,8 @@
 <style>
   .login{color: whitesmoke;
   opacity: 0.7;}
+  .logged {color: whitesmoke;
+  opacity: 0.7;}
 </style>
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-info">
@@ -16,19 +18,19 @@
       </div>
     </div>
     <div>
-      <% if (users[user_id]) { %> 
-        <form method="POST" action="/logout">
-          <span class="login">
-            Logged In As:
-            <%= users[user_id].email %> 
-          </span>
-          <button type="submit" class="btn btn-outline-dark">Logout
-          </button></form>
-      <% } else { %> 
-        <form method="POST" action="/login">
-          <input name="email" type="text" class="submit" placeholder="email"/>
-          <button type="submit" class="btn btn-outline-dark">Login</button></form>
-          <% } %> 
+      <% if(users[user_id]) {  %> 
+        <label class="logged">Logging in as: <%= users[user_id].email %> </label>
+        <a href="/logout" class="btn btn-outline-dark">
+          Logout
+        </a> 
+        <% } else { %> 
+        <a href="/login" class="btn btn-outline-light"> 
+          Login
+        </a>
+        <a href="/register" class="btn btn-outline-dark"> 
+          Register
+        </a>
+        <% } %> 
       </div>
     </nav>
   </header>
