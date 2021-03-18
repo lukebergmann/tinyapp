@@ -21,21 +21,15 @@ const urlDatabase = {};
 // GLOBAL USER DATABASE 
 const users = {};
 
-// Helper functions 
-const getCurrentUser = function(req) {
-   return users[req.cookies["user_id"]];
-
-};
-
 // The root path
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
-// ROUTE to render the urls_index template
+// GET to render My URLs
 app.get("/urls", (req, res) => {
   console.log("User Object:", users)
-  const currentUser = getCurrentUser(req);
+  console.log("urlDatabase:", urlDatabase)
   const templateVars = { urls: urlDatabase, users: users, user_id: req.cookies["user_id"]};
   res.render("urls_index", templateVars);
 });
@@ -43,25 +37,27 @@ app.get("/urls", (req, res) => {
 //POST new url
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString(req);
-  urlDatabase[shortURL] = {longURL: ""}
+  urlDatabase[shortURL] = {longURL: "", userID: req.cookies["user_id"]}
   let longURL = req.body.longURL;
   urlDatabase[shortURL].longURL = longURL;
   res.redirect(`/urls`);
-
 });
 
-// GET cookies when new user logs in
+// GET to create new URL
 app.get("/urls/new", (req, res) => {
-  const currentUser = getCurrentUser(req);
+  let user_id = req.cookies["user_id"];
   const templateVars = {
-    users: users, user_id: req.cookies["user_id"]
-  };
-  res.render("urls_new", templateVars);
+    users: users, user_id: req.cookies["user_id"] 
+    };
+    if (users[user_id]) {
+      res.render("urls_new", templateVars);
+    } else {
+  res.redirect("/login")
+    }   
 });
 
-// ROUTE to render the urls_show template
+// GET to render the urls_show template
 app.get("/urls/:shortURL", (req, res) => {
-  const currentUser = getCurrentUser(req);
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], users: users, user_id: req.cookies["user_id"]};
   res.render("urls_show", templateVars);
 });
@@ -92,7 +88,6 @@ app.get("/urls.json", (req, res) => {
 
 //GET to login
 app.get("/login", (req, res) => {
-  const currentUser = getCurrentUser(req);
   const templateVars = { users: users, user_id: req.cookies["user_id"] };
   res.render("urls_login", templateVars)
 });
@@ -111,10 +106,6 @@ app.post("/login", (req, res) => {
       res.redirect("/403-password")
     }
   }
-    
-    // if (email === users[userID].email) {
-    //   res.cookie('user_id', userID); 
-    // }
   });
 
 //POST to logout
@@ -132,7 +123,6 @@ app.get("/logout", (req, res) => {
 
 // GET to registration page
 app.get("/register", (req, res) => {
-  const currentUser = getCurrentUser(req);
   const templateVars = { users: users, user_id: req.cookies["user_id"] };
   res.render("urls_register", templateVars)
   res.redirect("/register")
@@ -164,7 +154,6 @@ app.post("/register", (req, res) => {
 
 // GET to 404 page
 app.get("/404", (req, res) => {
-  const currentUser = getCurrentUser(req);
   const templateVars = { users: users, user_id: req.cookies["user_id"] };
   res.render("urls_404", templateVars)
 });
@@ -176,7 +165,6 @@ app.post("/404", (req, res) => {
 
 // GET to 403 page for incorrect email
 app.get("/403-email", (req, res) => {
-  const currentUser = getCurrentUser(req);
   const templateVars = { users: users, user_id: req.cookies["user_id"] };
   res.render("urls_403-email", templateVars)
 });
@@ -188,7 +176,6 @@ app.post("/403-email", (req, res) => {
 
 // GET to 403 page for incorrect password
 app.get("/403-password", (req, res) => {
-  const currentUser = getCurrentUser(req);
   const templateVars = { users: users, user_id: req.cookies["user_id"] };
   res.render("urls_403-Password", templateVars)
 });
