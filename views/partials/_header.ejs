@@ -18,8 +18,8 @@
       </div>
     </div>
     <div>
-      <% if(users[user_id]) {  %> 
-        <label class="logged">Logging in as: <%= users[user_id].email %> </label>
+      <% if(user) {  %> 
+        <label class="logged">Logging in as: <%= user.email %> </label>
         <a href="/logout" class="btn btn-outline-dark">
           Logout
         </a> 
