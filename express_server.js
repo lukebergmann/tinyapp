@@ -206,7 +206,7 @@ app.post("/register", (req, res) => {
         res.redirect("/urls");
       });
   } else {
-    res.redirect("/403-email");
+    res.redirect("/404");
   }
 });
 
