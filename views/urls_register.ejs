@@ -17,12 +17,9 @@
     button {margin-top: 7px;}
     input {margin-left: 10px;}
     .card-text-center{margin-top: 10px; margin-bottom: 15px;}  
-    
-
-    
+        
   </style>
 </head>
-
 <body>
   <!-- include _header partial -->
   <%-include('./partials/_header') %>
@@ -33,16 +30,14 @@
         </h3>
       </div>
       <div class="hello">
-        <div class="card-text-center">
-         
+        <div class="card-text-center">        
             <h6>Enter Your Email and Password Below</h6>
             <form method="POST" action="/register">
               <input name="email" type="email" placeholder="email"/>
               <input name="password" type="password" placeholder="password"/>
               <br>
               <button type="submit" class="btn btn-info">Sign Me Up!</button>
-            </form>
-        
+            </form>        
         </div>
       </div>
     </div>

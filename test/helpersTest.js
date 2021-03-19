@@ -17,14 +17,14 @@ const testUsers = {
 
 describe('checkEmail', function() {
   it('should return a user with valid email', function() {
-    const user = checkEmail(testUsers, "user@example.com")
+    const user = checkEmail(testUsers, "user@example.com");
     const expectedOutput = true;
-    assert.equal(user, expectedOutput)
+    assert.equal(user, expectedOutput);
   });
   it('should return undefined if a non-valid email is passed in', function() {
-    const user = checkEmail(testUsers, "uuuuuuuuuuuser@example.com")
+    const user = checkEmail(testUsers, "uuuuuuuuuuuser@example.com");
     const expectedOutput = false;
-    assert.equal(user, expectedOutput)
+    assert.equal(user, expectedOutput);
   });
 });
 
